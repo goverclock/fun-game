@@ -22,9 +22,9 @@ Net::Net(Chat *c) {
     f.close();
     sock.bind(QHostAddress(serv_ip), serv_port);
 
-    connect(&sock, &QUdpSocket::readyRead, this, process_data);
-    connect(this, &Net::rec_serv, chat, Chat::serv_msg);
-    connect(chat, &Chat::user_msg, this, send_user);
+    connect(&sock, &QUdpSocket::readyRead, this, &Net::process_data);
+    connect(this, &Net::rec_serv, chat, &Chat::serv_msg);
+    connect(chat, &Chat::user_msg, this, &Net::send_user);
 };
 
 // read and resolve
@@ -41,6 +41,5 @@ void Net::process_data() {
 }
 
 void Net::send_user(Packet p) {
-    // qDebug() << "sending to server: " << p.un.ch.msg;
-    sock.writeDatagram((char *)&p, QHostAddress(serv_ip), serv_port);
+    sock.writeDatagram((char *)&p, sizeof(Packet), QHostAddress(serv_ip), serv_port);
 }

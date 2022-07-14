@@ -3,17 +3,25 @@
 #define MAX_MSG_LEN 128
 
 struct Packet {
-    enum { client_join, client_quit, chat, game } type;
+    enum { clnt_reg, reg_success, clnt_quit, chat, game } type;
 
     union {
-        struct client_join {} cj;
-        struct client_quit {} cq;
-        struct chat {
+        struct {
+            // nothing
+        } clnt_reg_info;
+        struct {
+            int new_id;
+        } reg_success_info;
+        struct {
+            int id;
+        } clnt_quit_info;
+        struct {
+            int id;     // only used by server
             char msg[MAX_MSG_LEN];
-        } ch;
-        struct game {
+        } chat_info;
+        struct {
             int obj_id;
             int x, y;
-        } ga;
-    } un;
+        } game_info;
+    } pack;
 };

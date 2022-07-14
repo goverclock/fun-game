@@ -27,16 +27,12 @@ Net::Net(Chat *c) {
     connect(chat, &Chat::user_msg, this, &Net::send_user);
 };
 
-// read and resolve
+// read and emit a packet
 void Net::process_data() {
     Packet p;
     while (sock.hasPendingDatagrams()) {
         sock.readDatagram((char *)&p, sock.pendingDatagramSize());
-        if (p.type == Packet::chat) {
-            emit rec_serv(p);
-        } else if (p.type == Packet::client_join) {
-            // ...
-        }  // ...
+        emit rec_serv(p);
     }
 }
 

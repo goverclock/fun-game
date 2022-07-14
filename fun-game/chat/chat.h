@@ -11,8 +11,11 @@ class Chat : public QObject {
 
     View *view;
 
+    int id = -1;
+
    public slots:
     void serv_msg(Packet);  // signal at Net::rec_serv
+    void box_msg();
 
    signals:
     void user_msg(Packet);  // slot at Net::send_user

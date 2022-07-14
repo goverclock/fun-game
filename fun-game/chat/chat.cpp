@@ -11,10 +11,20 @@ Chat::Chat(View *v) {
     static char data[MAX_MSG_LEN];
     connect(view->chat_box, &QLineEdit::returnPressed, [&] {
         // qDebug() << view->chat_box->text();
-        strcpy(data, view->chat_box->text().toStdString().c_str());
-        if (!view->chat_box->text().isEmpty()) emit user_msg(data);
+        if (!view->chat_box->text().isEmpty()) {
+            Packet p;
+            p.type = Packet::chat;
+            strcpy(p.un.ch.msg, view->chat_box->text().toStdString().c_str());
+            emit user_msg(p);
+        }
         view->chat_box->clear();
     });
 }
 
-void Chat::serv_msg(char *m) { view->shell.push_msg(m, false); }
+void Chat::serv_msg(Packet p) {
+    if (p.type == Packet::chat) {
+        view->shell.push_msg(p.un.ch.msg, false);
+    } else {
+        // ...
+    }
+}

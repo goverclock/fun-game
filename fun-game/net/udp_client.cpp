@@ -8,7 +8,7 @@
 #include "chat/chat.h"
 
 Net::Net(Chat *c) {
-    this->c = c;
+    chat = c;
 
     // read server address
     QFile f(QDir::currentPath() + "/servadr");
@@ -23,25 +23,24 @@ Net::Net(Chat *c) {
     sock.bind(QHostAddress(serv_ip), serv_port);
 
     connect(&sock, &QUdpSocket::readyRead, this, process_data);
-    connect(this, &Net::rec_serv, c, Chat::serv_msg);
-    connect(c, &Chat::user_msg, this, send_user);
+    connect(this, &Net::rec_serv, chat, Chat::serv_msg);
+    connect(chat, &Chat::user_msg, this, send_user);
 };
 
 // read and resolve
 void Net::process_data() {
-    static char data[MAX_MSG_LEN];
+    Packet p;
     while (sock.hasPendingDatagrams()) {
-        sock.readDatagram(data, sock.pendingDatagramSize());
-        Packet *p = (Packet *)data;
-        if (p->type == Packet::chat) {
-            emit rec_serv(p->un.ch.msg);
-        } else if (p->type == Packet::client_join) {
+        sock.readDatagram((char *)&p, sock.pendingDatagramSize());
+        if (p.type == Packet::chat) {
+            emit rec_serv(p);
+        } else if (p.type == Packet::client_join) {
             // ...
         }  // ...
     }
 }
 
-void Net::send_user(char *m) {
-    // qDebug() << "sending to server: " << m;
-    
+void Net::send_user(Packet p) {
+    // qDebug() << "sending to server: " << p.un.ch.msg;
+    sock.writeDatagram((char *)&p, QHostAddress(serv_ip), serv_port);
 }

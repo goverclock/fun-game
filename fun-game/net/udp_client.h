@@ -12,7 +12,7 @@ class Net : public QObject {
    public:
     Net(Chat *);
 
-    Chat *c;
+    Chat *chat;
 
     QUdpSocket sock;
     QString serv_ip;
@@ -21,8 +21,8 @@ class Net : public QObject {
     void process_data();
 
    public slots:
-    void send_user(char *);
+    void send_user(Packet);
 
    signals:
-    void rec_serv(char *);
+    void rec_serv(Packet);
 };

@@ -1,11 +1,14 @@
-#include "mainwindow.h"
+// This is only the client.
+// For server, see ../server/
 
 #include <QApplication>
+#include "view.h"
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+    
+    View v;
+    
     return a.exec();
 }

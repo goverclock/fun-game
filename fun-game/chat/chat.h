@@ -1,7 +1,6 @@
 #pragma once
 #include <QObject>
 
-
 class View;
 
 class Chat : public QObject {
@@ -9,11 +8,12 @@ class Chat : public QObject {
    public:
     Chat(View *);
 
-    View *v;
-    
+    View *view;
+
    public slots:
-    void serv_msg(const QString &);     // signal at Net::rec_serv
+    void serv_msg(char *);  // signal at Net::rec_serv
 
    signals:
-    void user_msg(const QString &);     // slot at Net::send_user
+    void user_msg( char *);  // slot at Net::send_user
+                            // commands(begin with '/') are resolved at server
 };

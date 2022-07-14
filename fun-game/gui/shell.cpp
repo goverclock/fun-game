@@ -23,7 +23,6 @@ Shell::Shell() : QObject(), QGraphicsRectItem() {
 }
 
 Shell::~Shell() {
-    qDebug("Shell deleted");
     // shell_log.close();
 }
 

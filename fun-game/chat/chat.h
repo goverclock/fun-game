@@ -1,6 +1,6 @@
 #pragma once
 #include <QObject>
-#include "gui/shell.h"
+
 
 class View;
 
@@ -9,9 +9,11 @@ class Chat : public QObject {
    public:
     Chat(View *);
 
-    Shell shell;
+    View *v;
     
    public slots:
-    void send_msg(const QString &);
-    void rec_msg(const QString &);
+    void serv_msg(const QString &);     // signal at Net::rec_serv
+
+   signals:
+    void user_msg(const QString &);     // slot at Net::send_user
 };

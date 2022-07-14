@@ -1,4 +1,5 @@
 #include "button.h"
+#include <QDebug>
 
 Button::Button(QString txt, int w, int h) : QObject(), QGraphicsRectItem() {
     width = w;
@@ -73,7 +74,7 @@ void Button::set_size(int w, int h) {
     width = w;
     height = h;
     setRect(0, 0, w, h);
-    set_point_size(50);
+    set_point_size(h * 2 / 3);
 }
 
 void Button::set_point_size(int n) {

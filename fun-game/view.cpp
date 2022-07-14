@@ -15,15 +15,24 @@ View::View() {
 }
 
 void View::init() {
-    bt = new Button("好");
-    bt->set_mode(Button::normal);
-    bt->setPos(0, 0);
-    bt->on(sce);
-    connect(bt, &Button::clicked, [] { qDebug("fuck"); });
+    line.setLine(200, 0, 200, 480);
+    sce.addItem(&line);
 
-    line = new QGraphicsLineItem();
-    line->setLine(200, 0, 200, 480);
-    sce.addItem(line);
+    chat_box = new QLineEdit(this);
+    chat_box->setGeometry(0, 0, 151, 20);
+    chat_box->setPlaceholderText("聊天...");
+    chat_box->move(0, 460);
+    connect(chat_box, &QLineEdit::editingFinished, this, [&] {
+        qDebug("text send");
+        chat_box->clear();
+    });
+
+    chat_send.setPos(150, 460 - 1);
+    chat_send.set_size(50, 20);
+    chat_send.set_text("发送");
+    chat_send.set_point_size(12);
+    chat_send.on(sce);
+    connect(&chat_send, &Button::clicked, [] { qDebug("fuck"); });
 }
 
 bool View::eventFilter(QObject *obj, QEvent *e) {

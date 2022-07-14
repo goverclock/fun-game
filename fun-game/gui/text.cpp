@@ -29,8 +29,7 @@ int Text::width() {
             ch++;
     }
 
-    return (point_size + 3) * (ch * 2 + oth);
-    // return (point_size + 3) * 2 * toPlainText().size();
+    return (point_size + 0) * (ch * 2 + oth);
 }
 
 // return the height of the QGraphicsTextItem

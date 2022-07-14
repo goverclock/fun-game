@@ -16,13 +16,24 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 set(PROJECT_SOURCES
         main.cpp
-        view.cpp
         view.h
+        view.cpp
 
         gui/text.h
         gui/text.cpp
         gui/button.h
         gui/button.cpp
+        gui/shell.h
+        gui/shell.cpp
+        gui/msg_queue.h
+        gui/msg_queue.cpp
+
+        chat/chat.h
+        chat/chat.cpp
+
+        net/udp_client.h
+        net/udp_client.cpp
+        net/protocol.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

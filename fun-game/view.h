@@ -2,6 +2,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsLineItem>
+#include <QLineEdit>
 #include "gui/button.h"
 
 class View : public QGraphicsView {
@@ -9,16 +10,18 @@ class View : public QGraphicsView {
    public:
     View();
 
+    QGraphicsScene sce;
 
    private:
     const int window_w = 800;
     const int window_h = 480;
 
-    QGraphicsScene sce;
 
     // gui
-    QGraphicsLineItem *line;
-    Button *bt;
+    QGraphicsLineItem line;
+    Button chat_send;
+    QLineEdit *chat_box;    
+
 
     void init();
 

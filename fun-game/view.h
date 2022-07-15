@@ -17,7 +17,6 @@ class View : public QGraphicsView {
     const int window_h = 480;
     // gui
     QGraphicsLineItem line;
-    Button chat_send;
     QLineEdit *chat_box;    
     Shell shell;
 

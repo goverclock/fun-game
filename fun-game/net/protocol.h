@@ -16,7 +16,7 @@ struct Packet {
             int id;
         } clnt_quit_info;
         struct {
-            int id;     // only used by server
+            int id;
             char msg[MAX_MSG_LEN];
         } chat_info;
         struct {

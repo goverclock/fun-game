@@ -2,12 +2,13 @@
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include <string>
+
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <list>
+#include <string>
 
 #include "protocol.h"
 
@@ -22,6 +23,7 @@ struct ClientInfo {
 } clients[MAX_CLIENTS];
 
 void pack_resolv(Packet, struct sockaddr_in);
+void send_to_all(Packet);
 
 int main() {
     sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -53,30 +55,49 @@ int main() {
 void pack_resolv(Packet in, struct sockaddr_in adr) {
     Packet p;
 
-    if (in.type == Packet::clnt_reg) {
-        p.type = Packet::reg_success;
-        int nid = -1;
-        for (int i = 0; i < MAX_CLIENTS; i++)
-            if (!clients[i].used) {
-                nid = i;
-                break;
+    switch (in.type) {
+        case Packet::clnt_reg: {
+            p.type = Packet::reg_success;
+            int nid = -1;
+            for (int i = 0; i < MAX_CLIENTS; i++)
+                if (!clients[i].used) {
+                    nid = i;
+                    break;
+                }
+            if (nid != -1) {
+                clients[nid].used = true;
+                clients[nid].adr = adr;
             }
-        if (nid != -1) {
-            clients[nid].used = true;
-            clients[nid].adr = adr;
+            p.pack.reg_success_info.new_id = nid;
+            sendto(sock, (char*)&p, sizeof(Packet), 0, (struct sockaddr*)&adr,
+                   sizeof(adr));
+            
+            p.type = Packet::chat;
+            sprintf(p.pack.chat_info.msg, "[all]用户%d加入.", nid);
+            send_to_all(p);
+            break;
         }
-        p.pack.reg_success_info.new_id = nid;
-        printf("a client registered with %d\n", nid);
-        sendto(sock, (char*)&p, sizeof(Packet), 0, (struct sockaddr*)&adr,
-               sizeof(adr));
-    } else if (in.type == Packet::chat) {
-        p.type = Packet::chat;
-        // send to all client
-        sprintf(p.pack.chat_info.msg, "[%d]%s", in.pack.chat_info.id, in.pack.chat_info.msg);
-        for (int i = 0; i < MAX_CLIENTS; i++)
-            if (clients[i].used) 
-                sendto(sock, (char*)&p, sizeof(Packet), 0,
-                       (struct sockaddr*)&clients[i].adr,
-                       sizeof(clients[i].adr));
+
+        case Packet::chat:
+            p.type = Packet::chat;
+            sprintf(p.pack.chat_info.msg, "[%d]%s", in.pack.chat_info.id,
+                    in.pack.chat_info.msg);
+            send_to_all(p);
+            break;
+
+        case Packet::clnt_quit:
+            p.type = Packet::chat;
+            sprintf(p.pack.chat_info.msg, "[all]用户%d离开.",
+                    in.pack.clnt_quit_info.id);
+            send_to_all(p);
+            clients[in.pack.clnt_quit_info.id].used = false;
+            break;
     }
+}
+
+void send_to_all(Packet p) {
+    for (int i = 0; i < MAX_CLIENTS; i++)
+        if (clients[i].used)
+            sendto(sock, (char*)&p, sizeof(Packet), 0,
+                   (struct sockaddr*)&clients[i].adr, sizeof(clients[i].adr));
 }

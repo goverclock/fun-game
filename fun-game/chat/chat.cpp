@@ -12,6 +12,14 @@ Chat::Chat(View *v) {
     connect(view->chat_box, &QLineEdit::returnPressed, this, &Chat::box_msg);
 }
 
+// BUG: doesn't work at all :(
+Chat::~Chat() {
+    Packet p;
+    p.type = Packet::clnt_quit;
+    p.pack.clnt_quit_info.id = id;
+    emit user_msg(p);
+}
+
 void Chat::serv_msg(Packet p) {
     if (p.type == Packet::chat) {
         view->shell.push_msg(p.pack.chat_info.msg, false);

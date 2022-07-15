@@ -8,7 +8,6 @@ class Chat : public QObject {
     Q_OBJECT
    public:
     Chat(View *);
-    ~Chat();
 
     View *view;
 

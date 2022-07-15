@@ -2,18 +2,25 @@
 // For server, see ../server/
 
 #include <QApplication>
-#include "view.h"
+
 #include "chat/chat.h"
+#include "game/game.h"
 #include "net/udp_client.h"
+#include "view.h"
 
 int main(int argc, char *argv[]) {
+#ifdef __WIN32__
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    #include <windows.h>
+    FreeConsole();
+#endif
     QApplication a(argc, argv);
-    
+
     View v;
     Chat c(&v);
-    // Game g;
-    Net n(&c);  // Net n(&c, &g);
-    
+    Game g(&v);
+    Net n(&c, &g);
+    v.get_net(&n);
+
     return a.exec();
 }

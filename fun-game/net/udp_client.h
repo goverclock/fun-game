@@ -5,20 +5,23 @@
 #include "protocol.h"
 
 class Chat;
+class Game;
 
 // client
 class Net : public QObject {
     Q_OBJECT
    public:
-    Net(Chat *);
+    Net(Chat *, Game*);
 
     Chat *chat;
+    Game *game;
 
     QUdpSocket sock;
     QString serv_ip;
     int serv_port;
 
     void process_data();
+    Packet send_end_pack();
 
    public slots:
     void send_user(Packet);

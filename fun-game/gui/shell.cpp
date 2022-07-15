@@ -50,7 +50,7 @@ void Shell::push_msg(QString m, bool has_time) {
     // QString t = m + "\n";
     // shell_log.write(t.toUtf8());
 
-    if (m.size() < 22) {
+    if (m.size() < 20) {
         msg_queue->push_msg(Msg{plain, m, 0, 0});
         return;
     }

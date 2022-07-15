@@ -35,6 +35,11 @@ set(PROJECT_SOURCES
         net/udp_client.h
         net/udp_client.cpp
         net/protocol.h
+
+        game/game.cpp
+        game/game.h
+        game/unit.cpp
+        game/unit.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

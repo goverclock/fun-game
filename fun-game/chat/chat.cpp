@@ -12,22 +12,18 @@ Chat::Chat(View *v) {
     connect(view->chat_box, &QLineEdit::returnPressed, this, &Chat::box_msg);
 }
 
-// BUG: doesn't work at all :(
-Chat::~Chat() {
-    Packet p;
-    p.type = Packet::clnt_quit;
-    p.pack.clnt_quit_info.id = id;
-    emit user_msg(p);
-}
-
 void Chat::serv_msg(Packet p) {
-    if (p.type == Packet::chat) {
-        view->shell.push_msg(p.pack.chat_info.msg, false);
-    } else if (p.type == Packet::reg_success) {
-        id = p.pack.reg_success_info.new_id;
-        view->shell.push_msg("[sys]注册成功.", false);
-    } else if (1) {
-        // ...
+    switch (p.type) {
+        case Packet::chat: {
+            view->shell.push_msg(p.pack.chat_info.msg, false);
+            break;
+        }
+        case Packet::reg_success: {
+            id = p.pack.reg_success_info.new_id;
+            view->shell.push_msg("[sys]注册成功.", false);
+            view->id = id;
+            break;
+        }
     }
 }
 

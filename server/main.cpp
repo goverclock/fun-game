@@ -12,9 +12,6 @@
 
 #include "protocol.h"
 
-#define PORT 9998
-#define MAX_CLIENTS 256
-
 int sock;
 struct sockaddr_in clnt_adr;
 struct ClientInfo {

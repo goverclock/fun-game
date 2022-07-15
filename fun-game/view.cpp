@@ -8,13 +8,6 @@ View::View() {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setScene(&sce);
     setSceneRect(0, 0, window_w, window_h);
-
-    init();
-
-    show();
-}
-
-void View::init() {
     line.setLine(200, 0, 200, 480);
     sce.addItem(&line);
 
@@ -25,11 +18,20 @@ void View::init() {
 
     shell.setParent(this);
     shell.on(sce);
+
+    show();
 }
+
+void View::get_net(Net *n) { net = n; }
 
 bool View::eventFilter(QObject *obj, QEvent *e) {
     if (e->type() == QEvent::Wheel)
         return true;
     else
         return QObject::eventFilter(obj, e);
+}
+
+void View::closeEvent(QCloseEvent *e) {
+    net->send_end_pack();
+    QWidget::closeEvent(e);
 }

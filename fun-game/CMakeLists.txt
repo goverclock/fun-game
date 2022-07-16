@@ -40,6 +40,9 @@ set(PROJECT_SOURCES
         game/game.h
         game/unit.cpp
         game/unit.h
+        game/angle_indicator.cpp
+        game/angle_indicator.h
+
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

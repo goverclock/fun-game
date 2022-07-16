@@ -2,9 +2,9 @@
 #include <QObject>
 
 #include "net/protocol.h"
-#include "unit.h"
 
 class View;
+class Unit;
 
 class Game : public QObject {
     Q_OBJECT

@@ -1,10 +1,9 @@
 #include "game.h"
-
+#include "unit.h"
 #include "view.h"
 
 Game::Game(View *v) {
     view = v;
-    id = view->id;
     memset(units, 0, sizeof(units));
 
     cur_opt.type = Packet::game_playeropt;
@@ -12,13 +11,15 @@ Game::Game(View *v) {
 
 void Game::serv_msg(Packet p) {
     switch(p.type) {
+        case Packet::reg_response:
+            id = p.pack.reg_success_info.new_id;
+            break;
         case Packet::game_start:{
             run = true;
             // assume *units[] are all nullptr
             auto &info = p.pack.game_start_info;
             for(int i = 0; info.player_ids[i] != -1; i++) {
-                units[i] = new Unit();
-                units[i]->player_id = info.player_ids[i];
+                units[i] = new Unit(this, info.player_ids[i]);
                 units[i]->setPos(info.x[i], info.y[i]);
                 view->sce.addItem(units[i]);
             }

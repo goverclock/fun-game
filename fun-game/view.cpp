@@ -24,6 +24,8 @@ View::View() {
 
 void View::get_net(Net *n) { net = n; }
 
+void View::get_id(int v) { id = v; }
+
 bool View::eventFilter(QObject *obj, QEvent *e) {
     if (e->type() == QEvent::Wheel)
         return true;

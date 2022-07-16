@@ -27,6 +27,7 @@ class View : public QGraphicsView {
     Shell shell;
 
     void get_net(Net *);
+    void get_id(int);
 
     bool eventFilter(QObject *, QEvent *);
     void closeEvent(QCloseEvent *);

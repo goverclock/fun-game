@@ -26,7 +26,7 @@ void Chat::serv_msg(Packet p) {
                 char t[MAX_MSG_LEN];
                 sprintf(t, "[sys]注册为用户%d.", id);
                 view->shell.push_msg(t, false);
-                view->id = id;
+                view->get_id(id);
             } else
                 view->shell.push_msg("[sys]注册失败.", false);
             break;

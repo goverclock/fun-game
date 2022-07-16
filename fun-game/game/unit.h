@@ -3,7 +3,7 @@
 #include <QGraphicsEllipseItem>
 #include <QObject>
 #include <QTimer>
-
+#include <QEvent>
 #include "angle_indicator.h"
 #include "game.h"
 #include "net/protocol.h"
@@ -13,12 +13,12 @@ class Unit : public QObject, public QGraphicsEllipseItem {
    public:
     Unit(Game *, int);
 
+    QGraphicsEllipseItem *outter;
    private:
     Game *game;
     int player_id;
     int health = 100;
     int energe = 100;
-    QGraphicsEllipseItem *outter;
     QTimer ftimer;
     AngleIndicator *ang = nullptr;
 
@@ -26,4 +26,5 @@ class Unit : public QObject, public QGraphicsEllipseItem {
 
    private slots:
     void update();
+    void event_resolv(bool, QEvent*);
 };

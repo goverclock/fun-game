@@ -26,6 +26,16 @@ void View::get_net(Net *n) { net = n; }
 
 void View::get_id(int v) { id = v; }
 
+void View::keyPressEvent(QKeyEvent *e) {
+    emit user_event(true, e);
+    return QWidget::keyPressEvent(e);
+}
+
+void View::keyReleaseEvent(QKeyEvent *e) {
+    emit user_event(false, e);
+    return QWidget::keyReleaseEvent(e);
+}
+
 bool View::eventFilter(QObject *obj, QEvent *e) {
     if (e->type() == QEvent::Wheel)
         return true;

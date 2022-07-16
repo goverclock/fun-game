@@ -7,6 +7,7 @@
 AngleIndicator::AngleIndicator(Unit *parent) : QObject(), QGraphicsLineItem() {
     setParentItem(parent);
 
+    setPos(0, -parent->outter->rect().height() / 2);
     setLine(0, 0, 50, 0);
     setPen(QPen(Qt::DotLine));
 

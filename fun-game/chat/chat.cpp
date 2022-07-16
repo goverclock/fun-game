@@ -56,10 +56,16 @@ void Chat::box_msg() {
                 return;
             }
             p.type = Packet::clnt_reg;
-        } else if (m == "/start") {
+        } else if (m == "/start" || m == "/s") {
             p.type = Packet::game_start;
-        } else if (m == "/end") {
+        } else if (m == "/end" || m == "/e") {
             p.type = Packet::game_end;
+        } else if (m == "/help") {
+            view->shell.push_msg("[sys]我比较懒.", false);
+            return;
+        } else {
+            view->shell.push_msg("[sys]未知指令,使用/help获取帮助.", false);
+            return;
         }
     } else {  // char message
         p.type = Packet::chat;

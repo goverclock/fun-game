@@ -1,8 +1,9 @@
 #pragma once
 
-#define MAX_MSG_LEN 128
+#define MAX_MSG_LEN 1024
 #define PORT 9998
 #define MAX_CLIENTS 256
+#define LEFT_OFFSET 200
 
 struct Packet {
     enum {

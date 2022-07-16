@@ -14,7 +14,6 @@ class Chat : public QObject {
 
     void reg();
 
-
    public slots:
     void serv_msg(Packet);  // signal at Net::rec_serv
     void box_msg();
@@ -22,5 +21,4 @@ class Chat : public QObject {
    signals:
     void user_msg(Packet);  // slot at Net::send_user
                             // commands(begin with '/') are resolved at server
-
 };

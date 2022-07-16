@@ -91,10 +91,22 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
             clients[in.pack.clnt_quit_info.id].used = false;
             break;
 
-        case Packet::game_start:
-
+        case Packet::game_start: {
+            p.type = Packet::game_start;
+            int ind = 0;
+            auto &info(p.pack.game_start_info);
+            for (int i = 0; i < MAX_CLIENTS; i++)
+                if (clients[i].used) {
+                    info.player_ids[ind] = i;
+                    info.x[ind] = ind * 100 + LEFT_OFFSET + 25;
+                    info.y[ind] = 200;  // drop to ground
+                    ind++;
+                }
+            info.player_ids[ind] = -1;
+            send_to_all(p);
             msg_to_all("[all]游戏开始.");
             break;
+        }
 
         case Packet::game_end:
             p.type = Packet::game_end;

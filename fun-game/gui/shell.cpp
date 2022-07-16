@@ -50,15 +50,15 @@ void Shell::push_msg(QString m, bool has_time) {
     // QString t = m + "\n";
     // shell_log.write(t.toUtf8());
 
-    if (m.size() < 20) {
+    if (m.size() < 23) {
         msg_queue->push_msg(Msg{plain, m, 0, 0});
         return;
     }
     QString front_m;
-    int chop_len = m.size() - 21;
+    int chop_len = m.size() - 23;
     front_m = m.chopped(chop_len);
     msg_queue->push_msg(Msg{plain, front_m, 0, 0});
-    m.remove(0, 21);
+    m.remove(0, 23);
     msg_queue->push_msg(Msg{plain, m, 0, 0});
 }
 

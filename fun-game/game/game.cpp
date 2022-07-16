@@ -20,6 +20,7 @@ void Game::serv_msg(Packet p) {
                 units[i] = new Unit();
                 units[i]->player_id = info.player_ids[i];
                 units[i]->setPos(info.x[i], info.y[i]);
+                view->sce.addItem(units[i]);
             }
             break;
         }

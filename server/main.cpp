@@ -21,6 +21,7 @@ struct ClientInfo {
 
 void pack_resolv(Packet, struct sockaddr_in);
 void send_to_all(Packet);
+void msg_to_all(const char[]);
 
 int main() {
     sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -31,15 +32,15 @@ int main() {
     clnt_adr.sin_addr.s_addr = INADDR_ANY;
     clnt_adr.sin_port = htons(PORT);
 
-    int ret = bind(sock, (struct sockaddr*)&clnt_adr, sizeof(clnt_adr));
+    int ret = bind(sock, (struct sockaddr *)&clnt_adr, sizeof(clnt_adr));
     assert(ret >= 0);
 
     Packet p;
     while (1) {
         int clnt_adr_len = sizeof(clnt_adr);
         int msg_len =
-            recvfrom(sock, (char*)&p, MAX_MSG_LEN, 0,
-                     (struct sockaddr*)&clnt_adr, (socklen_t*)&clnt_adr_len);
+            recvfrom(sock, (char *)&p, MAX_MSG_LEN, 0,
+                     (struct sockaddr *)&clnt_adr, (socklen_t *)&clnt_adr_len);
         if (msg_len <= 0) continue;
         printf("new data\n");
 
@@ -54,7 +55,7 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
 
     switch (in.type) {
         case Packet::clnt_reg: {
-            p.type = Packet::reg_success;
+            p.type = Packet::reg_response;
             int nid = -1;
             for (int i = 0; i < MAX_CLIENTS; i++)
                 if (!clients[i].used) {
@@ -66,9 +67,9 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
                 clients[nid].adr = adr;
             }
             p.pack.reg_success_info.new_id = nid;
-            sendto(sock, (char*)&p, sizeof(Packet), 0, (struct sockaddr*)&adr,
+            sendto(sock, (char *)&p, sizeof(Packet), 0, (struct sockaddr *)&adr,
                    sizeof(adr));
-            
+
             p.type = Packet::chat;
             sprintf(p.pack.chat_info.msg, "[all]用户%d加入.", nid);
             send_to_all(p);
@@ -89,12 +90,30 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
             send_to_all(p);
             clients[in.pack.clnt_quit_info.id].used = false;
             break;
+
+        case Packet::game_start:
+
+            msg_to_all("[all]游戏开始.");
+            break;
+
+        case Packet::game_end:
+            p.type = Packet::game_end;
+            send_to_all(p);
+            msg_to_all("[all]游戏结束.");
+            break;
     }
 }
 
 void send_to_all(Packet p) {
     for (int i = 0; i < MAX_CLIENTS; i++)
         if (clients[i].used)
-            sendto(sock, (char*)&p, sizeof(Packet), 0,
-                   (struct sockaddr*)&clients[i].adr, sizeof(clients[i].adr));
+            sendto(sock, (char *)&p, sizeof(Packet), 0,
+                   (struct sockaddr *)&clients[i].adr, sizeof(clients[i].adr));
+}
+
+void msg_to_all(const char m[]) {
+    Packet p;
+    p.type = Packet::chat;
+    sprintf(p.pack.chat_info.msg, m);
+    send_to_all(p);
 }

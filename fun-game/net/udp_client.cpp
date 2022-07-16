@@ -42,7 +42,7 @@ void Net::process_data() {
     }
 }
 
-Packet Net::send_end_pack() {
+void Net::send_end_pack() {
     Packet p;
     p.type = Packet::clnt_quit;
     p.pack.clnt_quit_info.id = chat->id;

@@ -10,8 +10,10 @@ class Chat : public QObject {
     Chat(View *);
 
     View *view;
-
     int id = -1;
+
+    void reg();
+
 
    public slots:
     void serv_msg(Packet);  // signal at Net::rec_serv
@@ -20,4 +22,5 @@ class Chat : public QObject {
    signals:
     void user_msg(Packet);  // slot at Net::send_user
                             // commands(begin with '/') are resolved at server
+
 };

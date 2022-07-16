@@ -7,7 +7,7 @@
 struct Packet {
     enum {
         clnt_reg,       // no info
-        reg_success,
+        reg_response,
         clnt_quit,
         chat,
         game_start,

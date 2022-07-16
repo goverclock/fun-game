@@ -5,6 +5,7 @@
 Game::Game(View *v) {
     view = v;
     id = view->id;
+    memset(units, 0, sizeof(units));
 
     cur_opt.type = Packet::game_playeropt;
 }
@@ -18,7 +19,7 @@ void Game::serv_msg(Packet p) {
             for(int i = 0; info.player_ids[i] != -1; i++) {
                 units[i] = new Unit();
                 units[i]->player_id = info.player_ids[i];
-                units[i]->body.setPos(info.x[i], info.y[i]);
+                units[i]->setPos(info.x[i], info.y[i]);
             }
             break;
         }

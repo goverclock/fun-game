@@ -21,7 +21,7 @@ class Net : public QObject {
     int serv_port;
 
     void process_data();
-    Packet send_end_pack();
+    void send_end_pack();
 
    public slots:
     void send_user(Packet);

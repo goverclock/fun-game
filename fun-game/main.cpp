@@ -21,6 +21,7 @@ int main(int argc, char *argv[]) {
     Game g(&v);
     Net n(&c, &g);
     v.get_net(&n);
+    c.reg();
 
     return a.exec();
 }

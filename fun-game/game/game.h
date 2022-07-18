@@ -17,6 +17,7 @@ class Game : public QObject {
     bool run = false;
     bool your_turn = false;
     Unit *units[MAX_CLIENTS];
+    Unit *clnt_unit;
 
     Packet cur_opt;
     // commands

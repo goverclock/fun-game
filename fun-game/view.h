@@ -3,7 +3,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QLineEdit>
-
+#include "gui/power_bar.h"
 #include "gui/button.h"
 #include "gui/shell.h"
 #include "net/protocol.h"
@@ -26,7 +26,16 @@ class View : public QGraphicsView {
     QGraphicsLineItem line;
     QLineEdit *chat_box;
     Shell shell;
+    Button *fly;
+    Button *multi;
+    Button *dupli;
+    Button *violen;
+    Button *HP;
+    Button *MP;
+    Button *end_turn;
+    PowerBar *pb;
 
+    void set_game_gui_on_off(bool);
     void get_net(Net *);
     void get_id(int);
 

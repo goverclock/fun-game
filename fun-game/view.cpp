@@ -19,7 +19,63 @@ View::View() {
     shell.setParent(this);
     shell.on(sce);
 
+    fly = new Button("飞行(100)", 80, 40);
+    fly->set_point_size(12);
+    fly->setPos(200, 420);
+
+    multi = new Button("散射(60)", 80, 40);
+    multi->set_point_size(12);
+    multi->setPos(280, 420);
+
+    dupli = new Button("连发(50)", 80, 40);
+    dupli->set_point_size(12);
+    dupli->setPos(360, 420);
+
+    violen = new Button("重击(04)", 80, 40);
+    violen->set_point_size(12);
+    violen->setPos(440, 420);
+
+    HP = new Button("生命:100", 80, 20);
+    HP->set_mode(Button::label);
+    HP->set_point_size(8);
+    HP->setPos(520, 420);
+
+    MP = new Button("体力:100", 80, 20);
+    MP->set_mode(Button::label);
+    MP->set_point_size(8);
+    MP->setPos(520, 440);
+
+    end_turn = new Button("结束回合", 80, 40);
+    end_turn->set_point_size(12);
+    end_turn->setPos(720, 420);
+
+    pb = new PowerBar(600, 20);
+    pb->setPos(200, 460);
+    connect(this, &View::user_event, pb, &PowerBar::event_resolv);
+
     show();
+}
+
+void View::set_game_gui_on_off(bool b) {
+    if (b) {
+        fly->on(sce);
+        multi->on(sce);
+        dupli->on(sce);
+        violen->on(sce);
+        HP->on(sce);
+        MP->on(sce);
+        end_turn->on(sce);
+        pb->on(sce);
+    } else {
+        fly->off(sce);
+        multi->off(sce);
+        dupli->off(sce);
+        violen->off(sce);
+        HP->off(sce);
+        MP->off(sce);
+        end_turn->off(sce);
+        pb->off(sce);
+    }
 }
 
 void View::get_net(Net *n) { net = n; }

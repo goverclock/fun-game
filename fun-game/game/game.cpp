@@ -15,13 +15,18 @@ void Game::serv_msg(Packet p) {
             id = p.pack.reg_success_info.new_id;
             break;
         case Packet::game_start:{
+            view->set_game_gui_on_off(true);
             run = true;
             // assume *units[] are all nullptr
             auto &info = p.pack.game_start_info;
             for(int i = 0; info.player_ids[i] != -1; i++) {
+                if(units[i] != nullptr) delete units[i];
                 units[i] = new Unit(this, info.player_ids[i]);
                 units[i]->setPos(info.x[i], info.y[i]);
                 view->sce.addItem(units[i]);
+
+                if(info.player_ids[i] == id)
+                    clnt_unit = units[i];
             }
             break;
         }
@@ -34,6 +39,7 @@ void Game::serv_msg(Packet p) {
             break;
         }
         case Packet::game_end:{
+            view->set_game_gui_on_off(false);
             run = false;
             your_turn = false;
             for(int i = 0; i < MAX_CLIENTS; i++)
@@ -41,6 +47,7 @@ void Game::serv_msg(Packet p) {
                     delete units[i];
                     units[i] = nullptr;
                 }
+            clnt_unit = nullptr;
             break;
         }
     }

@@ -28,6 +28,8 @@ set(PROJECT_SOURCES
         gui/shell.cpp
         gui/msg_queue.h
         gui/msg_queue.cpp
+        gui/power_bar.h
+        gui/power_bar.cpp
 
         chat/chat.h
         chat/chat.cpp

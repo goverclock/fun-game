@@ -36,6 +36,7 @@ struct Packet {
         } game_start_info;
         struct {
             int id;
+            bool pass;
             bool fly;
             int times;
             bool multi;

@@ -21,7 +21,6 @@ Unit::Unit(Game *g, int id) : QObject(), QGraphicsEllipseItem() {
 
     auto &v(game->view);
     auto &info(game->cur_opt.pack.game_playeropt_info);
-    info.id = player_id;
     connect(v, &View::user_event, this,
             &Unit::event_resolv);  // key press/release event
     // fly button

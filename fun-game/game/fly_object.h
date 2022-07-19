@@ -1,20 +1,26 @@
 #pragma once
 #include <QGraphicsItem>
+#include <QGraphicsScene>
 #include <QObject>
 #include <QTimer>
-#include <QGraphicsRectItem>
-#include <QGraphicsEllipseItem>
+#include "net/protocol.h"
 
 class Unit;
 
 // TODO: implement bullet and fly as successor
-class FlyObject :public QObject, QGraphicsItem {
+class FlyObject : public QObject {
     Q_OBJECT
    public:
-    FlyObject(bool is_round, int r = 8, int x = 0, int y = 0);
+    FlyObject(Unit *, Packet);
 
+    bool fly;
+    QGraphicsItem *body;
+    double dmg;
+    double vx, vy;
     QTimer ftimer;
 
+   private:
+    void set_power(Packet);
    private slots:
     void update();
 };

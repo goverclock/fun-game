@@ -1,6 +1,7 @@
 #include "game.h"
-#include "fly_object.h"
+
 #include "angle_indicator.h"
+#include "fly_object.h"
 #include "unit.h"
 #include "view.h"
 
@@ -10,15 +11,19 @@ Game::Game(View *v) {
 
     connect(v->pb, &PowerBar::released, this, &Game::end_turn);
     connect(v->end_turn, &Button::released, this, &Game::end_turn);
+    connect(v->end_turn, &Button::released,
+            [&] { cur_opt.pack.game_playeropt_info.pass = true; });
 }
 
 // send operation packet and end turn
 void Game::end_turn() {
-    if(!your_turn) return;
+    if (!your_turn) return;
     your_turn = false;
     auto &info(cur_opt.pack.game_playeropt_info);
-    info.power = view->pb->cur_power;       // power
-    info.angle = clnt_unit->ang->angle();   // angle
+    info.id = clnt_unit->player_id;        // id
+    info.power = view->pb->cur_power;      // power
+    info.angle = clnt_unit->ang->angle();  // angle
+    info.times++;                          // basic 1
     emit user_msg(cur_opt);
 }
 
@@ -52,11 +57,13 @@ void Game::serv_msg(Packet p) {
             break;
         }
         case Packet::game_playeropt: {
-            // TODO... summon a FlyObject
             auto &info = p.pack.game_playeropt_info;
             int ind = 0;
-            // while( units[ind]->player_id != info.id) ind++;
-            
+            while (units[ind]->player_id != info.id) ind++;
+
+            // TODO... summon a FlyObject
+            auto fo = new FlyObject(units[ind], p);
+            //
             break;
         }
         case Packet::game_end: {

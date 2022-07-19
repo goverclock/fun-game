@@ -10,6 +10,8 @@ class AngleIndicator : public QObject, public QGraphicsLineItem {
    public:
     AngleIndicator(Unit*);
 
+    int angle();
+
    public slots:
     void set_dir(int);
 

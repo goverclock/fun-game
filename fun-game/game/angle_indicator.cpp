@@ -18,5 +18,7 @@ AngleIndicator::AngleIndicator(Unit *parent) : QObject(), QGraphicsLineItem() {
     });
 }
 
+int AngleIndicator::angle() { return (int)rotation() % 360; }
+
 // 1 -> counter clockwise, -1 -> clockwise
 void AngleIndicator::set_dir(int v) { dir = v; }

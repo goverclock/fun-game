@@ -41,7 +41,7 @@ struct Packet {
             bool multi;
             int violence;
             int power;  // 0 ~ 100
-            // int angle;
+            int angle;
         } game_playeropt_info;
     } pack;
 };

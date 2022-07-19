@@ -1,5 +1,5 @@
 #include "game.h"
-
+#include "fly_object.h"
 #include "angle_indicator.h"
 #include "unit.h"
 #include "view.h"
@@ -7,8 +7,6 @@
 Game::Game(View *v) {
     view = v;
     memset(units, 0, sizeof(units));
-
-    cur_opt.type = Packet::game_playeropt;
 
     connect(v->pb, &PowerBar::released, this, &Game::end_turn);
     connect(v->end_turn, &Button::released, this, &Game::end_turn);
@@ -18,6 +16,9 @@ Game::Game(View *v) {
 void Game::end_turn() {
     if(!your_turn) return;
     your_turn = false;
+    auto &info(cur_opt.pack.game_playeropt_info);
+    info.power = view->pb->cur_power;       // power
+    info.angle = clnt_unit->ang->angle();   // angle
     emit user_msg(cur_opt);
 }
 
@@ -42,11 +43,20 @@ void Game::serv_msg(Packet p) {
             break;
         }
         case Packet::game_your_turn: {
+            view->pb->clear();
+            bzero(&cur_opt, sizeof(cur_opt));
+            cur_opt.type = Packet::game_playeropt;
+            clnt_unit->energy = 100;
+            view->MP->set_text("体力:" + QString::number(clnt_unit->energy));
             your_turn = true;
             break;
         }
         case Packet::game_playeropt: {
-            // TODO...
+            // TODO... summon a FlyObject
+            auto &info = p.pack.game_playeropt_info;
+            int ind = 0;
+            // while( units[ind]->player_id != info.id) ind++;
+            
             break;
         }
         case Packet::game_end: {

@@ -136,6 +136,7 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
             break;
 
         case Packet::game_playeropt:
+            send_to_all(in);
             p.type = Packet::chat;
             sprintf(p.pack.chat_info.msg, "[all]玩家%d的回合.", next_turn());
             send_to_all(p);

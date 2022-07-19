@@ -20,9 +20,9 @@ class Game : public QObject {
     Unit *clnt_unit;
 
     Packet cur_opt;
-    void end_turn();
 
    public slots:
+    void end_turn();
     void serv_msg(Packet);
    signals:
     void user_msg(Packet);

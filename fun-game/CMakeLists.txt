@@ -44,7 +44,8 @@ set(PROJECT_SOURCES
         game/unit.h
         game/angle_indicator.cpp
         game/angle_indicator.h
-
+        game/fly_object.cpp
+        game/fly_object.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

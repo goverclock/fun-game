@@ -1,6 +1,6 @@
 #include "power_bar.h"
 
-void PowerBar::clear() { shade->setRect(0, 0, 0, 0); }
+void PowerBar::clear() { cur_power = 0; }
 
 void PowerBar::set_dir(double v) { dir = v; }
 

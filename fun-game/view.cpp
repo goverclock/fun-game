@@ -1,5 +1,6 @@
 #include "view.h"
 
+#include "game/game.h"
 #include "gui/button.h"
 
 View::View() {
@@ -31,7 +32,7 @@ View::View() {
     dupli->set_point_size(12);
     dupli->setPos(360, 420);
 
-    violen = new Button("重击(04)", 80, 40);
+    violen = new Button("重击(40)", 80, 40);
     violen->set_point_size(12);
     violen->setPos(440, 420);
 
@@ -49,7 +50,7 @@ View::View() {
     end_turn->set_point_size(12);
     end_turn->setPos(720, 420);
 
-    pb = new PowerBar(600, 20);
+    pb = new PowerBar(game, 600, 20);
     pb->setPos(200, 460);
     connect(this, &View::user_event, pb, &PowerBar::event_resolv);
 
@@ -80,15 +81,17 @@ void View::set_game_gui_on_off(bool b) {
 
 void View::get_net(Net *n) { net = n; }
 
+void View::get_game(Game *g) { game = g; }
+
 void View::get_id(int v) { id = v; }
 
 void View::keyPressEvent(QKeyEvent *e) {
-    emit user_event(true, e);
+    if (game->run && game->your_turn) emit user_event(true, e);
     return QWidget::keyPressEvent(e);
 }
 
 void View::keyReleaseEvent(QKeyEvent *e) {
-    emit user_event(false, e);
+    if (game->run && game->your_turn) emit user_event(false, e);
     return QWidget::keyReleaseEvent(e);
 }
 

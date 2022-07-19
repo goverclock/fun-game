@@ -19,6 +19,11 @@ struct ClientInfo {
     struct sockaddr_in adr;
 } clients[MAX_CLIENTS];
 
+struct GameInfo {
+
+} game_info;
+int current_online;
+
 void pack_resolv(Packet, struct sockaddr_in);
 void send_to_all(Packet);
 void msg_to_all(const char[]);
@@ -73,6 +78,9 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
             p.type = Packet::chat;
             sprintf(p.pack.chat_info.msg, "[all]用户%d加入.", nid);
             send_to_all(p);
+            current_online++;
+            sprintf(p.pack.chat_info.msg, "[all]当前在线:%d.", current_online);
+            send_to_all(p);
             break;
         }
 
@@ -85,10 +93,13 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
 
         case Packet::clnt_quit:
             p.type = Packet::chat;
+            clients[in.pack.clnt_quit_info.id].used = false;
             sprintf(p.pack.chat_info.msg, "[all]用户%d离开.",
                     in.pack.clnt_quit_info.id);
             send_to_all(p);
-            clients[in.pack.clnt_quit_info.id].used = false;
+            current_online--;
+            sprintf(p.pack.chat_info.msg, "[all]当前在线:%d.", current_online);
+            send_to_all(p);
             break;
 
         case Packet::game_start: {

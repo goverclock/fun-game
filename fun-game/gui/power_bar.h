@@ -5,15 +5,20 @@
 #include "button.h"
 #include "text.h"
 
+class Game;
+
 class PowerBar : public Button {
     Q_OBJECT
    public:
-    PowerBar(int w, int h) : Button("", w, h) {
+    PowerBar(Game *g, int w, int h) : Button("", w, h) {
+        game = g;
+        
         set_mode(Button::label);
 
         label = new Text(this, "0");
         label->set_point_size(10);
         label->setPos(300, 0);
+        label->setZValue(2);
 
         shade = new QGraphicsRectItem(this);
         shade->setBrush(Qt::gray);
@@ -24,6 +29,7 @@ class PowerBar : public Button {
         connect(&ftimer, &QTimer::timeout, this, &PowerBar::update);
     }
 
+    Game *game;
     double cur_power = 0;
     const double max_power = 100;
     Text *label;
@@ -33,6 +39,10 @@ class PowerBar : public Button {
 
     void clear();
     void set_dir(double);
+ 
+   signals:
+    void released(int); // cur_power
+    
    public slots:
     void event_resolv(bool, QEvent *);
 

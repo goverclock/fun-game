@@ -9,6 +9,8 @@
 #include "net/protocol.h"
 #include "net/udp_client.h"
 
+class Game;
+
 class View : public QGraphicsView {
     Q_OBJECT
    public:
@@ -16,6 +18,7 @@ class View : public QGraphicsView {
 
     QGraphicsScene sce;
     Net *net;
+    Game *game;
 
     const int window_w = 800;
     const int window_h = 480;
@@ -37,6 +40,7 @@ class View : public QGraphicsView {
 
     void set_game_gui_on_off(bool);
     void get_net(Net *);
+    void get_game(Game *);
     void get_id(int);
 
     void keyPressEvent(QKeyEvent*);

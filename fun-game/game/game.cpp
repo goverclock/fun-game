@@ -13,6 +13,40 @@ Game::Game(View *v) {
     connect(v->end_turn, &Button::released, this, &Game::end_turn);
     connect(v->end_turn, &Button::released,
             [&] { cur_opt.pack.game_playeropt_info.pass = true; });
+
+    auto &info(cur_opt.pack.game_playeropt_info);
+    // fly button
+    connect(view->fly, &Button::clicked, [&] {
+        if (your_turn && clnt_unit->energy >= 100) {
+            info.fly = true;
+            clnt_unit->energy -= 100;
+            view->MP->set_text("体力:" + QString::number(clnt_unit->energy));
+        }
+    });
+    // multiple button
+    connect(view->multi, &Button::clicked, [&] {
+        if (your_turn && clnt_unit->energy >= 60) {
+            info.multi = true;
+            clnt_unit->energy -= 60;
+            view->MP->set_text("体力:" + QString::number(clnt_unit->energy));
+        }
+    });
+    // duplicate button
+    connect(view->dupli, &Button::clicked, [&] {
+        if (your_turn && clnt_unit->energy >= 40) {
+            info.times += 2;
+            clnt_unit->energy -= 40;
+            view->MP->set_text("体力:" + QString::number(clnt_unit->energy));
+        }
+    });
+    // violence button
+    connect(view->violen, &Button::clicked, [&] {
+        if (your_turn && clnt_unit->energy >= 40) {
+            info.violence++;
+            clnt_unit->energy -= 40;
+            view->MP->set_text("体力:" + QString::number(clnt_unit->energy));
+        }
+    });
 }
 
 // send operation packet and end turn
@@ -62,7 +96,7 @@ void Game::serv_msg(Packet p) {
             while (units[ind]->player_id != info.id) ind++;
 
             // TODO... summon a FlyObject
-            auto fo = new FlyObject(units[ind], p);
+            flyobj_resolv(units[ind], p);
             //
             break;
         }
@@ -78,5 +112,29 @@ void Game::serv_msg(Packet p) {
             clnt_unit = nullptr;
             break;
         }
+    }
+}
+
+void Game::flyobj_resolv(Unit *u, Packet p) {
+    auto &info = p.pack.game_playeropt_info;
+    if (info.pass) return;
+    if (info.fly) {
+        new FlyObject(u, p);
+        return;
+    }
+
+    // TODO: gap time between duplicate
+    auto pl(p);
+    auto pr(p);
+    pl.pack.game_playeropt_info.angle += 10;
+    pr.pack.game_playeropt_info.angle -= 10;
+    int lag = 0;
+    while (info.times--) {
+        new FlyObject(u, p, lag);
+        if (info.multi) {
+            new FlyObject(u, pl, lag);
+            new FlyObject(u, pr, lag);
+        }
+        lag += 600;
     }
 }

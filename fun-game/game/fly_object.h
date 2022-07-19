@@ -3,6 +3,7 @@
 #include <QGraphicsScene>
 #include <QObject>
 #include <QTimer>
+
 #include "net/protocol.h"
 
 class Unit;
@@ -11,14 +12,14 @@ class Unit;
 class FlyObject : public QObject {
     Q_OBJECT
    public:
-    FlyObject(Unit *, Packet);
+    FlyObject(Unit *, Packet, int = 0);
 
     bool fly;
     QGraphicsItem *body;
     double dmg;
     double vx, vy;
     QTimer ftimer;
-
+   
    private:
     void set_power(Packet);
    private slots:

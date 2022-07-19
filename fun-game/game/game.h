@@ -26,4 +26,7 @@ class Game : public QObject {
     void serv_msg(Packet);
    signals:
     void user_msg(Packet);
+
+   private:
+    void flyobj_resolv(Unit*, Packet);
 };

@@ -5,7 +5,7 @@
 
 #include "unit.h"
 
-FlyObject::FlyObject(Unit *unit, Packet p) : QObject() {
+FlyObject::FlyObject(Unit *unit, Packet p, int lag) : QObject() {
     auto &info(p.pack.game_playeropt_info);
     fly = info.fly;
     if (info.fly)
@@ -17,17 +17,22 @@ FlyObject::FlyObject(Unit *unit, Packet p) : QObject() {
     e->setRect(-4, -11, 8, 6);
     e->setTransformOriginPoint(e->rect().center());
 
-    ftimer.start(10);
     connect(&ftimer, &QTimer::timeout, this, &FlyObject::update);
 
-    set_power(p);
+    QTimer *lag_timer = new QTimer(this);
+    lag_timer->start(lag);
+    connect(lag_timer, &QTimer::timeout, [=] {
+        delete lag_timer;
+        set_power(p);
+        ftimer.start(10);
+    });
 }
 
-void FlyObject::set_power(Packet p) {
-    auto &info(p.pack.game_playeropt_info);
+void FlyObject::set_power(Packet power_info) {
+    auto &info(power_info.pack.game_playeropt_info);
     dmg = 10 * (1 + static_cast<double>(info.violence) * 0.5);
-    vx = info.power * qCos(qDegreesToRadians(info.angle)) * 0.05;
-    vy = info.power * qSin(qDegreesToRadians(info.angle)) * 0.05;
+    vx = info.power * qCos(qDegreesToRadians(info.angle)) * 0.07;
+    vy = info.power * qSin(qDegreesToRadians(info.angle)) * 0.07;
 }
 
 void FlyObject::update() {
@@ -36,8 +41,8 @@ void FlyObject::update() {
         delete this;
         return;
     }
-    // e->setRotation(e->rotation() + 3);
+    e->setRotation(e->rotation() + 3);
 
     e->setPos(e->x() + vx, e->y() + vy);
-    // vy += 0.01;
+    vy += 0.01;
 }

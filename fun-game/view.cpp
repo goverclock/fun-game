@@ -28,7 +28,7 @@ View::View() {
     multi->set_point_size(12);
     multi->setPos(280, 420);
 
-    dupli = new Button("连发(50)", 80, 40);
+    dupli = new Button("连发(40)", 80, 40);
     dupli->set_point_size(12);
     dupli->setPos(360, 420);
 

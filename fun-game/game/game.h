@@ -20,10 +20,7 @@ class Game : public QObject {
     Unit *clnt_unit;
 
     Packet cur_opt;
-    // commands
-    // called after receiving server message
-    void start();
-    void end();
+    void end_turn();
 
    public slots:
     void serv_msg(Packet);

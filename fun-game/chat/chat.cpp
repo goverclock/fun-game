@@ -20,6 +20,7 @@ void Chat::serv_msg(Packet p) {
             view->shell.push_msg(p.pack.chat_info.msg, false);
             break;
         }
+
         case Packet::reg_response: {
             id = p.pack.reg_success_info.new_id;
             if (id != -1) {
@@ -31,6 +32,7 @@ void Chat::serv_msg(Packet p) {
                 view->shell.push_msg("[sys]注册失败.", false);
             break;
         }
+
         default:
             break;
     }

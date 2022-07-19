@@ -41,7 +41,7 @@ class PowerBar : public Button {
     void set_dir(double);
  
    signals:
-    void released(int); // cur_power
+    void released();
     
    public slots:
     void event_resolv(bool, QEvent *);

@@ -20,13 +20,15 @@ struct ClientInfo {
 } clients[MAX_CLIENTS];
 
 struct GameInfo {
-
+    int turn_ind;                 // index of player_ids
+    int player_ids[MAX_CLIENTS];  // end with -1
 } game_info;
 int current_online;
 
 void pack_resolv(Packet, struct sockaddr_in);
 void send_to_all(Packet);
 void msg_to_all(const char[]);
+int next_turn();
 
 int main() {
     sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -116,6 +118,13 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
             info.player_ids[ind] = -1;
             send_to_all(p);
             msg_to_all("[all]游戏开始.");
+            memcpy(game_info.player_ids, info.player_ids,
+                   sizeof(info.player_ids));
+            game_info.turn_ind = 0;
+
+            p.type = Packet::chat;
+            sprintf(p.pack.chat_info.msg, "[all]玩家%d的回合.", next_turn());
+            send_to_all(p);
             break;
         }
 
@@ -123,6 +132,13 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
             p.type = Packet::game_end;
             send_to_all(p);
             msg_to_all("[all]游戏结束.");
+            memset(&game_info, -1, sizeof(game_info));
+            break;
+
+        case Packet::game_playeropt:
+            p.type = Packet::chat;
+            sprintf(p.pack.chat_info.msg, "[all]玩家%d的回合.", next_turn());
+            send_to_all(p);
             break;
     }
 }
@@ -139,4 +155,19 @@ void msg_to_all(const char m[]) {
     p.type = Packet::chat;
     sprintf(p.pack.chat_info.msg, m);
     send_to_all(p);
+}
+
+// returns player_ids[turn_ind]
+int next_turn() {
+    // send your_turn packet
+    Packet p;
+    p.type = Packet::game_your_turn;
+    auto adr = clients[game_info.player_ids[game_info.turn_ind]].adr;
+    sendto(sock, (char *)&p, sizeof(Packet), 0, (struct sockaddr *)&adr,
+           sizeof(adr));
+
+    int ret = game_info.player_ids[game_info.turn_ind];
+    if (game_info.player_ids[++game_info.turn_ind] == -1)
+        game_info.turn_ind = 0;
+    return ret;
 }

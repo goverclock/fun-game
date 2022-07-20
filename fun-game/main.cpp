@@ -8,10 +8,13 @@
 #include "net/udp_client.h"
 #include "view.h"
 
+#ifdef __WIN32__
+#include <windows.h>
+#endif
+
 int main(int argc, char *argv[]) {
 #ifdef __WIN32__
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    #include <windows.h>
     FreeConsole();
 #endif
     QApplication a(argc, argv);

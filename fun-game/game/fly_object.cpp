@@ -6,6 +6,7 @@
 #include "unit.h"
 
 FlyObject::FlyObject(Unit *unit, Packet p, int lag) : QObject() {
+    setParent(unit);
     auto &info(p.pack.game_playeropt_info);
     fly = info.fly;
     if (info.fly)

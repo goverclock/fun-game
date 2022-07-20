@@ -10,9 +10,10 @@ Game::Game(View *v) {
     memset(units, 0, sizeof(units));
 
     connect(v->pb, &PowerBar::released, this, &Game::end_turn);
-    connect(v->end_turn, &Button::released, this, &Game::end_turn);
-    connect(v->end_turn, &Button::released,
-            [&] { cur_opt.pack.game_playeropt_info.pass = true; });
+    connect(v->end_turn, &Button::released, [&] {
+        cur_opt.pack.game_playeropt_info.pass = true;
+        end_turn();
+    });
 
     auto &info(cur_opt.pack.game_playeropt_info);
     // fly button
@@ -66,6 +67,19 @@ void Game::serv_msg(Packet p) {
         case Packet::reg_response:
             id = p.pack.reg_success_info.new_id;
             break;
+
+        case Packet::clnt_quit: {
+            int quit_id = p.pack.clnt_quit_info.id;
+            if (run)
+                for (int i = 0; i < MAX_CLIENTS; i++)
+                    if (units[i] != nullptr && units[i]->player_id == quit_id) {
+                        delete units[i];
+                        units[i] = nullptr;
+                        break;
+                    }
+            break;
+        }
+
         case Packet::game_start: {
             view->set_game_gui_on_off(true);
             run = true;

@@ -123,7 +123,7 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
                 if (clients[i].used) {
                     info.player_ids[ind] = i;
                     info.x[ind] = ind * 100 + LEFT_OFFSET + 25;
-                    info.y[ind] = 200;  // drop to ground
+                    info.y[ind] = 0;  // drop to ground
                     ind++;
                 }
             info.player_ids[ind] = -1;

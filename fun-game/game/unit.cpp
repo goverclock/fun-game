@@ -1,5 +1,5 @@
 #include "unit.h"
-
+#include "bg_objects.h"
 #include "view.h"
 
 Unit::Unit(Game *g, int id) : QObject(), QGraphicsEllipseItem() {
@@ -24,8 +24,13 @@ Unit::Unit(Game *g, int id) : QObject(), QGraphicsEllipseItem() {
 
 void Unit::update() {
     bool on_ground = false;
+    for(const auto &bg: game->bgobjs->objs)
+        if(collidesWithItem(bg)) {
+            on_ground = true;
+            break;
+        }
     // TODO: DEBUG
-    on_ground = true;
+    // on_ground = true;
 
     // drop
     if (!on_ground) {
@@ -35,7 +40,6 @@ void Unit::update() {
     }
 
     // out of screen(die)
-    if (y() > 500) delete this;
     // TODO: inform the server
 }
 

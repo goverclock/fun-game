@@ -84,6 +84,7 @@ void Game::serv_msg(Packet p) {
 
         case Packet::game_start: {
             view->set_game_gui_on_off(true);
+            bgobjs->init();
             run = true;
             // assume *units[] are all nullptr
             auto &info = p.pack.game_start_info;
@@ -118,6 +119,7 @@ void Game::serv_msg(Packet p) {
         }
         case Packet::game_end: {
             view->set_game_gui_on_off(false);
+            bgobjs->clear();
             run = false;
             your_turn = false;
             for (int i = 0; i < MAX_CLIENTS; i++)

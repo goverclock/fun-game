@@ -9,7 +9,12 @@ class BGObjects : public QObject {
     Q_OBJECT
    public:
     BGObjects(Game*);
-    // ~BGObject();
+    ~BGObjects();
+
+    Game *game;
+
+    void init();
+    void clear();
 
     QVector<QGraphicsPolygonItem*> objs;
 };

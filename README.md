@@ -1,4 +1,7 @@
 # fun-game
 
-TODO:
-bug: when an FlyObject exists, /end causes segment error
+A fun game which isn't that fun.
+
+Do not waste your life on it.(it's buggy)
+
+

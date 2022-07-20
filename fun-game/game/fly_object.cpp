@@ -2,7 +2,7 @@
 
 #include <QGraphicsEllipseItem>
 #include <QGraphicsRectItem>
-
+#include <QtMath>
 #include "bg_objects.h"
 #include "unit.h"
 
@@ -41,8 +41,8 @@ FlyObject::~FlyObject() { delete body; }
 
 void FlyObject::set_power(Packet power_info) {
     auto &info(power_info.pack.game_playeropt_info);
-    vx = info.power * qCos(qDegreesToRadians(info.angle)) * 0.07;
-    vy = info.power * qSin(qDegreesToRadians(info.angle)) * 0.07;
+    vx = info.power * qCos(qDegreesToRadians((float)info.angle)) * 0.07;
+    vy = info.power * qSin(qDegreesToRadians((float)info.angle)) * 0.07;
 }
 
 void FlyObject::update() {

@@ -102,7 +102,7 @@ void Game::serv_msg(Packet p) {
 
         case Packet::game_your_turn: {
             view->pb->clear();
-            bzero(&cur_opt, sizeof(cur_opt));
+            memset(&cur_opt, 0, sizeof(cur_opt));
             cur_opt.type = Packet::game_playeropt;
             clnt_unit->energy = 100;
             view->MP->set_text("体力:" + QString::number(clnt_unit->energy));

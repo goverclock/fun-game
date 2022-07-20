@@ -5,10 +5,10 @@
 
 class Game;
 
-class BGObject : public QObject {
+class BGObjects : public QObject {
     Q_OBJECT
    public:
-    BGObject(Game*);
+    BGObjects(Game*);
     // ~BGObject();
 
     QVector<QGraphicsPolygonItem*> objs;

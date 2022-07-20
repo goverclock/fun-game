@@ -5,7 +5,7 @@
 #define MAX_CLIENTS 256
 #define LEFT_OFFSET 200
 #define SERVER_FILE "servadr"
-#define MAP_FILE "map"
+#define BGOBJ_FILE "bgobj"
 
 struct Packet {
     enum {

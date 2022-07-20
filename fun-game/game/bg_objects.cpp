@@ -9,10 +9,10 @@
 #include "game.h"
 #include "net/protocol.h"
 
-BGObject::BGObject(Game* g) {
-    QFile f(QDir::currentPath() + "/" MAP_FILE);
+BGObjects::BGObjects(Game* g) {
+    QFile f(QDir::currentPath() + "/" BGOBJ_FILE);
     if (!f.open(QIODevice::ReadOnly)) {
-        qDebug() << "BGObject(): fail to open" << f.fileName();
+        qDebug() << "BGObjects(): fail to open" << f.fileName();
         exit(1);
     }
     QTextStream ts(&f);

@@ -1,6 +1,7 @@
 #include "game.h"
 
 #include "angle_indicator.h"
+#include "bg_objects.h"
 #include "fly_object.h"
 #include "unit.h"
 #include "view.h"
@@ -8,6 +9,7 @@
 Game::Game(View *v) {
     view = v;
     memset(units, 0, sizeof(units));
+    bgobjs = new BGObjects(this);
 
     connect(v->pb, &PowerBar::released, this, &Game::end_turn);
     connect(v->end_turn, &Button::released, [&] {

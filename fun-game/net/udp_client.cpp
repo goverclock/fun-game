@@ -12,7 +12,7 @@ Net::Net(Chat *c, Game *g) {
     game = g;
 
     // read server address
-    QFile f(QDir::currentPath() + "/servadr");
+    QFile f(QDir::currentPath() + "/" SERVER_FILE);
     if (!f.open(QIODevice::ReadOnly)) {
         qDebug() << "Net(): fail to open" << f.fileName();
         exit(1);
@@ -42,7 +42,7 @@ void Net::process_data() {
     }
 }
 
-Packet Net::send_end_pack() {
+void Net::send_end_pack() {
     Packet p;
     p.type = Packet::clnt_quit;
     p.pack.clnt_quit_info.id = chat->id;

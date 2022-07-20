@@ -28,6 +28,8 @@ set(PROJECT_SOURCES
         gui/shell.cpp
         gui/msg_queue.h
         gui/msg_queue.cpp
+        gui/power_bar.h
+        gui/power_bar.cpp
 
         chat/chat.h
         chat/chat.cpp
@@ -40,6 +42,12 @@ set(PROJECT_SOURCES
         game/game.h
         game/unit.cpp
         game/unit.h
+        game/angle_indicator.cpp
+        game/angle_indicator.h
+        game/fly_object.cpp
+        game/fly_object.h
+        game/bg_objects.cpp
+        game/bg_objects.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

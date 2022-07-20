@@ -13,17 +13,28 @@ Chat::Chat(View *v) {
 }
 
 void Chat::serv_msg(Packet p) {
+    // only resolve: chat, reg_success
+    // others are resolved by Net::serv_msg
     switch (p.type) {
         case Packet::chat: {
             view->shell.push_msg(p.pack.chat_info.msg, false);
             break;
         }
-        case Packet::reg_success: {
+
+        case Packet::reg_response: {
             id = p.pack.reg_success_info.new_id;
-            view->shell.push_msg("[sys]注册成功.", false);
-            view->id = id;
+            if (id != -1) {
+                char t[MAX_MSG_LEN];
+                sprintf(t, "[sys]注册为用户%d.", id);
+                view->shell.push_msg(t, false);
+                view->get_id(id);
+            } else
+                view->shell.push_msg("[sys]注册失败.", false);
             break;
         }
+
+        default:
+            break;
     }
 }
 
@@ -34,25 +45,41 @@ void Chat::box_msg() {
     view->chat_box->clear();
     Packet p;
 
+    if (m.isEmpty()) return;
     if (id == -1 && m != "/reg") {
         view->shell.push_msg("[sys]需要先使用/reg进行注册.", false);
         return;
-    } else if (m.isEmpty())
-        return;
-    else if (m[0] == '/') {  // some command
+    }
+
+    if (m[0] == '/') {  // some command
         if (m == "/reg") {
             if (id != -1) {
                 view->shell.push_msg("[sys]你已经注册过了.", false);
                 return;
             }
             p.type = Packet::clnt_reg;
+        } else if (m == "/start" || m == "/s") {
+            p.type = Packet::game_start;
+        } else if (m == "/end" || m == "/e") {
+            p.type = Packet::game_end;
+        } else if (m == "/help") {
+            view->shell.push_msg("[sys]我比较懒.", false);
+            return;
+        } else {
+            view->shell.push_msg("[sys]未知指令,使用/help获取帮助.", false);
+            return;
         }
-        // else if(...)
-    } else {  // chat message
+    } else {  // char message
         p.type = Packet::chat;
         p.pack.chat_info.id = id;
         strcpy(p.pack.chat_info.msg, m.toStdString().c_str());
     }
 
+    emit user_msg(p);
+}
+
+void Chat::reg() {
+    Packet p;
+    p.type = Packet::clnt_reg;
     emit user_msg(p);
 }

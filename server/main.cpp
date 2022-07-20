@@ -19,8 +19,19 @@ struct ClientInfo {
     struct sockaddr_in adr;
 } clients[MAX_CLIENTS];
 
+struct GameInfo {
+    bool run;
+    int turn_ind;                 // index of player_ids
+    int player_ids[MAX_CLIENTS];  // end with -1
+    bool dead[MAX_CLIENTS];       // 0 - alive, 1 - dead
+} game_info;
+int current_online;
+int current_turn_player_id;
+
 void pack_resolv(Packet, struct sockaddr_in);
 void send_to_all(Packet);
+void msg_to_all(const char[]);
+int next_turn();
 
 int main() {
     sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -31,15 +42,15 @@ int main() {
     clnt_adr.sin_addr.s_addr = INADDR_ANY;
     clnt_adr.sin_port = htons(PORT);
 
-    int ret = bind(sock, (struct sockaddr*)&clnt_adr, sizeof(clnt_adr));
+    int ret = bind(sock, (struct sockaddr *)&clnt_adr, sizeof(clnt_adr));
     assert(ret >= 0);
 
     Packet p;
     while (1) {
         int clnt_adr_len = sizeof(clnt_adr);
         int msg_len =
-            recvfrom(sock, (char*)&p, MAX_MSG_LEN, 0,
-                     (struct sockaddr*)&clnt_adr, (socklen_t*)&clnt_adr_len);
+            recvfrom(sock, (char *)&p, MAX_MSG_LEN, 0,
+                     (struct sockaddr *)&clnt_adr, (socklen_t *)&clnt_adr_len);
         if (msg_len <= 0) continue;
         printf("new data\n");
 
@@ -54,7 +65,7 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
 
     switch (in.type) {
         case Packet::clnt_reg: {
-            p.type = Packet::reg_success;
+            p.type = Packet::reg_response;
             int nid = -1;
             for (int i = 0; i < MAX_CLIENTS; i++)
                 if (!clients[i].used) {
@@ -66,11 +77,14 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
                 clients[nid].adr = adr;
             }
             p.pack.reg_success_info.new_id = nid;
-            sendto(sock, (char*)&p, sizeof(Packet), 0, (struct sockaddr*)&adr,
+            sendto(sock, (char *)&p, sizeof(Packet), 0, (struct sockaddr *)&adr,
                    sizeof(adr));
-            
+
             p.type = Packet::chat;
             sprintf(p.pack.chat_info.msg, "[all]用户%d加入.", nid);
+            send_to_all(p);
+            current_online++;
+            sprintf(p.pack.chat_info.msg, "[all]当前在线:%d.", current_online);
             send_to_all(p);
             break;
         }
@@ -82,19 +96,112 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
             send_to_all(p);
             break;
 
-        case Packet::clnt_quit:
+        case Packet::clnt_quit: {
+            send_to_all(in);
+            int quit_id = p.pack.clnt_quit_info.id;
+
             p.type = Packet::chat;
+            clients[in.pack.clnt_quit_info.id].used = false;
             sprintf(p.pack.chat_info.msg, "[all]用户%d离开.",
                     in.pack.clnt_quit_info.id);
             send_to_all(p);
-            clients[in.pack.clnt_quit_info.id].used = false;
+
+            current_online--;
+            sprintf(p.pack.chat_info.msg, "[all]当前在线:%d.", current_online);
+            send_to_all(p);
+
+            if (!current_online) game_info.run = false;
+            if (game_info.run && quit_id == current_turn_player_id) next_turn();
             break;
+        }
+        case Packet::game_start: {
+            p.type = Packet::game_start;
+            game_info.run = true;
+            int ind = 0;
+            auto &info(p.pack.game_start_info);
+            for (int i = 0; i < MAX_CLIENTS; i++)
+                if (clients[i].used) {
+                    info.player_ids[ind] = i;
+                    info.x[ind] = ind * 100 + LEFT_OFFSET + 25;
+                    info.y[ind] = 0;  // drop to ground
+                    ind++;
+                }
+            info.player_ids[ind] = -1;
+            send_to_all(p);
+            msg_to_all("[all]游戏开始.");
+            memcpy(game_info.player_ids, info.player_ids,
+                   sizeof(info.player_ids));
+            game_info.turn_ind = -1;
+            memset(game_info.dead, 0, sizeof(game_info.dead));
+
+            next_turn();
+            break;
+        }
+
+        case Packet::game_end:
+            memset(&game_info, 0, sizeof(game_info));
+            p.type = Packet::game_end;
+            send_to_all(p);
+            msg_to_all("[all]游戏结束.");
+            memset(&game_info, -1, sizeof(game_info));
+            break;
+
+        case Packet::game_playeropt:
+            send_to_all(in);
+            next_turn();
+            break;
+
+        case Packet::game_player_die: {
+            send_to_all(p);
+            int die_id = p.pack.game_player_die_info.id;
+            game_info.dead[die_id] = true;
+
+            p.type = Packet::chat;
+            sprintf(p.pack.chat_info.msg, "[all]%d被击败了!", die_id);
+            send_to_all(p);
+            break;
+        }
+
+        default:
+            puts("FUCK");
     }
 }
 
 void send_to_all(Packet p) {
     for (int i = 0; i < MAX_CLIENTS; i++)
         if (clients[i].used)
-            sendto(sock, (char*)&p, sizeof(Packet), 0,
-                   (struct sockaddr*)&clients[i].adr, sizeof(clients[i].adr));
+            sendto(sock, (char *)&p, sizeof(Packet), 0,
+                   (struct sockaddr *)&clients[i].adr, sizeof(clients[i].adr));
+}
+
+void msg_to_all(const char m[]) {
+    Packet p;
+    p.type = Packet::chat;
+    sprintf(p.pack.chat_info.msg, m);
+    send_to_all(p);
+}
+
+// find next turn_ind and returns player_ids[turn_ind]
+int next_turn() {
+    // send your_turn packet
+    Packet p;
+    p.type = Packet::game_your_turn;
+
+    int ret;
+    do {
+        ++game_info.turn_ind;
+        if (game_info.player_ids[game_info.turn_ind] == -1)
+            game_info.turn_ind = 0;
+        ret = game_info.player_ids[game_info.turn_ind];
+    } while (!clients[ret].used || game_info.dead[ret]);
+
+    auto adr = clients[ret].adr;
+    sendto(sock, (char *)&p, sizeof(Packet), 0, (struct sockaddr *)&adr,
+           sizeof(adr));
+
+    p.type = Packet::chat;
+    sprintf(p.pack.chat_info.msg, "[all]玩家%d的回合.", ret);
+    send_to_all(p);
+
+    return current_turn_player_id = ret;
 }

@@ -22,14 +22,14 @@ Text::Text(QGraphicsItem* p, const QString& txt) {
 int Text::width() {
     int ch = 0, oth = 0;
     for (auto i : toPlainText()) {
-        QString s(":->");
+        QString s(":->()");
         if (i.isNumber() || s.contains(i))
             oth++;
         else
             ch++;
     }
 
-    return (point_size + 0) * (ch * 2 + oth);
+    return (point_size + -3) * (ch * 2 + oth);
 }
 
 // return the height of the QGraphicsTextItem

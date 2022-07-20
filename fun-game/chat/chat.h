@@ -10,8 +10,9 @@ class Chat : public QObject {
     Chat(View *);
 
     View *view;
-
     int id = -1;
+
+    void reg();
 
    public slots:
     void serv_msg(Packet);  // signal at Net::rec_serv

@@ -1,18 +1,30 @@
 #pragma once
 
-#include <QObject>
-#include "net/protocol.h"
 #include <QGraphicsEllipseItem>
+#include <QObject>
+#include <QTimer>
+#include <QEvent>
+#include "angle_indicator.h"
+#include "game.h"
+#include "net/protocol.h"
 
-class Unit : public QObject {
+class Unit : public QObject, public QGraphicsEllipseItem {
     Q_OBJECT
    public:
-    Unit();
+    Unit(Game *, int);
 
+    QGraphicsEllipseItem *outter;
+
+    Game *game;
     int player_id;
     int health = 100;
-    int energe = 100;
-    // AngleIndicator ang;
-    QGraphicsEllipseItem body;
+    int energy = 100;
+    QTimer ftimer;
+    AngleIndicator *ang = nullptr;
 
+    void change_health(int);
+
+   private slots:
+    void update();
+    void event_resolv(bool, QEvent*);
 };

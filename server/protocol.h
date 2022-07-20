@@ -4,6 +4,8 @@
 #define PORT 9998
 #define MAX_CLIENTS 256
 #define LEFT_OFFSET 200
+#define SERVER_FILE "servadr"
+#define MAP_FILE "map"
 
 struct Packet {
     enum {

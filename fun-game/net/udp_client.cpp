@@ -12,7 +12,7 @@ Net::Net(Chat *c, Game *g) {
     game = g;
 
     // read server address
-    QFile f(QDir::currentPath() + "/servadr");
+    QFile f(QDir::currentPath() + "/" SERVER_FILE);
     if (!f.open(QIODevice::ReadOnly)) {
         qDebug() << "Net(): fail to open" << f.fileName();
         exit(1);

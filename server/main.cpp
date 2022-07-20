@@ -109,6 +109,7 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
             sprintf(p.pack.chat_info.msg, "[all]当前在线:%d.", current_online);
             send_to_all(p);
 
+            if(!current_online) game_info.run = false;
             if (game_info.run && quit_id == current_turn_player_id)
                 next_turn();
             break;

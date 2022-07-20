@@ -18,6 +18,7 @@ class FlyObject : public QObject {
     Unit *unit;
     bool fly;
     QGraphicsItem *body;
+    QGraphicsEllipseItem *inner;
     double dmg;
     double vx, vy;
     QTimer ftimer;

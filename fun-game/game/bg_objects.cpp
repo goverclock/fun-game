@@ -52,7 +52,6 @@ void BGObjects::create_crater(Unit *u, FlyObject *fo) {
     n->setPen(QPen(Qt::transparent));
     n->setBrush(Qt::white);
     game->view->sce.addItem(n);
-    // n->setZValue(10);
     craters.push_back(n);
     delete fo;
 }

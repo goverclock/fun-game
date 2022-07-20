@@ -8,7 +8,7 @@
 
 FlyObject::FlyObject(Unit *u, Packet p, int lag) : QObject() {
     unit = u;
-    setParent(unit);
+    // setParent(unit);
     auto &info(p.pack.game_playeropt_info);
     fly = info.fly;
     if (info.fly)
@@ -20,6 +20,10 @@ FlyObject::FlyObject(Unit *u, Packet p, int lag) : QObject() {
     e->setRect(-4, -11, 8, 6);
     e->setTransformOriginPoint(e->rect().center());
 
+    inner = new QGraphicsEllipseItem(body);
+    inner->setRect(-0.5, -0.5, 1, 1);
+    inner->setPos(e->rect().center());
+
     connect(&ftimer, &QTimer::timeout, this, &FlyObject::update);
 
     QTimer *lag_timer = new QTimer(this);
@@ -30,6 +34,7 @@ FlyObject::FlyObject(Unit *u, Packet p, int lag) : QObject() {
         ftimer.start(10);
     });
 }
+
 FlyObject::~FlyObject() { delete body; }
 
 void FlyObject::set_power(Packet power_info) {
@@ -52,19 +57,19 @@ void FlyObject::update() {
     vy += 0.01;
 
     // explode
-    bool on_ground = true;
+    bool touch = true;
     for (const auto &bg : unit->game->bgobjs->craters)
-        if (body->collidesWithItem(bg)) {
-            on_ground = false;
+        if (inner->collidesWithItem(bg)) {
+            touch = false;
             break;
         }
-    if (on_ground) {
-        on_ground = false;
+    if (touch) {
+        touch = false;
         for (const auto &bg : unit->game->bgobjs->objs)
-            if (body->collidesWithItem(bg)) {
-                on_ground = true;
+            if (inner->collidesWithItem(bg)) {
+                touch = true;
                 break;
             }
     }
-    if (on_ground) unit->game->bgobjs->create_crater(unit, this);
+    if (touch) unit->game->bgobjs->create_crater(unit, this);
 }

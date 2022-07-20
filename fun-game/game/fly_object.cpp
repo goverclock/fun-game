@@ -22,6 +22,7 @@ FlyObject::FlyObject(Unit *u, Packet p, int lag) : QObject() {
 
     inner = new QGraphicsEllipseItem(body);
     inner->setRect(-0.5, -0.5, 1, 1);
+    inner->hide();
     inner->setPos(e->rect().center());
 
     connect(&ftimer, &QTimer::timeout, this, &FlyObject::update);
@@ -71,5 +72,15 @@ void FlyObject::update() {
                 break;
             }
     }
-    if (touch) unit->game->bgobjs->create_crater(unit, this);
+    if (touch) {
+        if (fly) {
+            auto p(e->parentItem()->mapToScene(e->pos()));
+            p.setY(p.y() - e->rect().height());
+            unit->setPos(p);
+            delete this;
+        }
+        // teleport
+        else
+            unit->game->bgobjs->create_crater(unit, this);
+    }
 }

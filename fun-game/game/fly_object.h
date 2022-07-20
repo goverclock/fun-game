@@ -13,7 +13,9 @@ class FlyObject : public QObject {
     Q_OBJECT
    public:
     FlyObject(Unit *, Packet, int = 0);
+    ~FlyObject();
 
+    Unit *unit;
     bool fly;
     QGraphicsItem *body;
     double dmg;

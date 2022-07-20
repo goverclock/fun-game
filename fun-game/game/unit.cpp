@@ -1,4 +1,5 @@
 #include "unit.h"
+
 #include "bg_objects.h"
 #include "view.h"
 
@@ -7,6 +8,7 @@ Unit::Unit(Game *g, int id) : QObject(), QGraphicsEllipseItem() {
     player_id = id;
 
     setRect(-1, -1, 1, 1);
+    setZValue(2);
 
     outter = new QGraphicsEllipseItem(this);
     outter->setRect(-8, -16, 16, 16);
@@ -23,14 +25,20 @@ Unit::Unit(Game *g, int id) : QObject(), QGraphicsEllipseItem() {
 }
 
 void Unit::update() {
-    bool on_ground = false;
-    for(const auto &bg: game->bgobjs->objs)
-        if(collidesWithItem(bg)) {
-            on_ground = true;
+    bool on_ground = true;
+    for (const auto &bg : game->bgobjs->craters)
+        if (collidesWithItem(bg)) {
+            on_ground = false;
             break;
         }
-    // TODO: DEBUG
-    // on_ground = true;
+    if (on_ground) {
+        on_ground = false;
+        for (const auto &bg : game->bgobjs->objs)
+            if (collidesWithItem(bg)) {
+                on_ground = true;
+                break;
+            }
+    }
 
     // drop
     if (!on_ground) {

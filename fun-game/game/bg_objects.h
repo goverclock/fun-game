@@ -2,8 +2,11 @@
 #include <QGraphicsPolygonItem>
 #include <QObject>
 #include <QVector>
+#include <QGraphicsEllipseItem>
 
 class Game;
+class Unit;
+class FlyObject;
 
 class BGObjects : public QObject {
     Q_OBJECT
@@ -14,7 +17,9 @@ class BGObjects : public QObject {
     Game *game;
 
     void init();
+    void create_crater(Unit*, FlyObject*);
     void clear();
 
     QVector<QGraphicsPolygonItem*> objs;
+    QVector<QGraphicsEllipseItem*> craters;
 };

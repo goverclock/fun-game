@@ -3,9 +3,11 @@
 #include <QGraphicsEllipseItem>
 #include <QGraphicsRectItem>
 
+#include "bg_objects.h"
 #include "unit.h"
 
-FlyObject::FlyObject(Unit *unit, Packet p, int lag) : QObject() {
+FlyObject::FlyObject(Unit *u, Packet p, int lag) : QObject() {
+    unit = u;
     setParent(unit);
     auto &info(p.pack.game_playeropt_info);
     fly = info.fly;
@@ -28,6 +30,7 @@ FlyObject::FlyObject(Unit *unit, Packet p, int lag) : QObject() {
         ftimer.start(10);
     });
 }
+FlyObject::~FlyObject() { delete body; }
 
 void FlyObject::set_power(Packet power_info) {
     auto &info(power_info.pack.game_playeropt_info);
@@ -42,8 +45,26 @@ void FlyObject::update() {
         delete this;
         return;
     }
-    e->setRotation(e->rotation() + 3);
 
+    // move
+    e->setRotation(e->rotation() + 3);
     e->setPos(e->x() + vx, e->y() + vy);
     vy += 0.01;
+
+    // explode
+    bool on_ground = true;
+    for (const auto &bg : unit->game->bgobjs->craters)
+        if (body->collidesWithItem(bg)) {
+            on_ground = false;
+            break;
+        }
+    if (on_ground) {
+        on_ground = false;
+        for (const auto &bg : unit->game->bgobjs->objs)
+            if (body->collidesWithItem(bg)) {
+                on_ground = true;
+                break;
+            }
+    }
+    if (on_ground) unit->game->bgobjs->create_crater(unit, this);
 }

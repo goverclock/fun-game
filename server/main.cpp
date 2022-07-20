@@ -23,6 +23,7 @@ struct GameInfo {
     bool run;
     int turn_ind;                 // index of player_ids
     int player_ids[MAX_CLIENTS];  // end with -1
+    bool dead[MAX_CLIENTS];       // 0 - alive, 1 - dead
 } game_info;
 int current_online;
 int current_turn_player_id;
@@ -109,9 +110,8 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
             sprintf(p.pack.chat_info.msg, "[all]当前在线:%d.", current_online);
             send_to_all(p);
 
-            if(!current_online) game_info.run = false;
-            if (game_info.run && quit_id == current_turn_player_id)
-                next_turn();
+            if (!current_online) game_info.run = false;
+            if (game_info.run && quit_id == current_turn_player_id) next_turn();
             break;
         }
         case Packet::game_start: {
@@ -132,13 +132,14 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
             memcpy(game_info.player_ids, info.player_ids,
                    sizeof(info.player_ids));
             game_info.turn_ind = -1;
+            memset(game_info.dead, 0, sizeof(game_info.dead));
 
             next_turn();
             break;
         }
 
         case Packet::game_end:
-            game_info.run = false;
+            memset(&game_info, 0, sizeof(game_info));
             p.type = Packet::game_end;
             send_to_all(p);
             msg_to_all("[all]游戏结束.");
@@ -149,6 +150,20 @@ void pack_resolv(Packet in, struct sockaddr_in adr) {
             send_to_all(in);
             next_turn();
             break;
+
+        case Packet::game_player_die: {
+            send_to_all(p);
+            int die_id = p.pack.game_player_die_info.id;
+            game_info.dead[die_id] = true;
+
+            p.type = Packet::chat;
+            sprintf(p.pack.chat_info.msg, "[all]%d被击败了!", die_id);
+            send_to_all(p);
+            break;
+        }
+
+        default:
+            puts("FUCK");
     }
 }
 
@@ -174,10 +189,11 @@ int next_turn() {
 
     int ret;
     do {
-        if (game_info.player_ids[++game_info.turn_ind] == -1)
+        ++game_info.turn_ind;
+        if (game_info.player_ids[game_info.turn_ind] == -1)
             game_info.turn_ind = 0;
         ret = game_info.player_ids[game_info.turn_ind];
-    } while (!clients[ret].used);
+    } while (!clients[ret].used || game_info.dead[ret]);
 
     auto adr = clients[ret].adr;
     sendto(sock, (char *)&p, sizeof(Packet), 0, (struct sockaddr *)&adr,

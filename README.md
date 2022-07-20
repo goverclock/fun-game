@@ -1,4 +1,4 @@
 # fun-game
 
 TODO:
-duplicated /start issue
+bug: when an FlyObject exists, /end causes segment error

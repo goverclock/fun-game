@@ -22,10 +22,9 @@ class Unit : public QObject, public QGraphicsEllipseItem {
     QTimer ftimer;
     AngleIndicator *ang = nullptr;
 
-    void act(Packet);
+    void change_health(int);
 
    private slots:
     void update();
     void event_resolv(bool, QEvent*);
-
 };

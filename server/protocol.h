@@ -9,14 +9,15 @@
 
 struct Packet {
     enum {
-        clnt_reg,       // no info
+        clnt_reg,  // no info
         reg_response,
         clnt_quit,
         chat,
         game_start,
-        game_end,       // no info
+        game_end,  // no info
         game_playeropt,
-        game_your_turn  // no info
+        game_your_turn,  // no info
+        game_player_die
     } type;
 
     union {
@@ -46,5 +47,8 @@ struct Packet {
             int power;  // 0 ~ 100
             int angle;
         } game_playeropt_info;
+        struct {
+            int id;
+        } game_player_die_info;
     } pack;
 };

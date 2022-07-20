@@ -10,6 +10,7 @@ FlyObject::FlyObject(Unit *u, Packet p, int lag) : QObject() {
     unit = u;
     // setParent(unit);
     auto &info(p.pack.game_playeropt_info);
+    dmg = 10 * (1 + static_cast<double>(info.violence) * 0.5);
     fly = info.fly;
     if (info.fly)
         body = new QGraphicsRectItem;
@@ -40,7 +41,6 @@ FlyObject::~FlyObject() { delete body; }
 
 void FlyObject::set_power(Packet power_info) {
     auto &info(power_info.pack.game_playeropt_info);
-    dmg = 10 * (1 + static_cast<double>(info.violence) * 0.5);
     vx = info.power * qCos(qDegreesToRadians(info.angle)) * 0.07;
     vy = info.power * qSin(qDegreesToRadians(info.angle)) * 0.07;
 }

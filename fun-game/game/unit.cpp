@@ -24,6 +24,20 @@ Unit::Unit(Game *g, int id) : QObject(), QGraphicsEllipseItem() {
             &Unit::event_resolv);  // key press/release event
 }
 
+void Unit::change_health(int v) {
+    health += v;
+    if (player_id == game->id)
+        game->view->HP->set_text("生命:" + QString::number(health));
+
+    // health = 0;  // TODO: debug
+    if (health <= 0) {
+        Packet p;
+        p.type = Packet::game_player_die;
+        p.pack.game_player_die_info.id = game->id;
+        // emit game->user_msg(p);
+    }
+}
+
 void Unit::update() {
     bool on_ground = true;
     for (const auto &bg : game->bgobjs->craters)
@@ -47,8 +61,14 @@ void Unit::update() {
         setPos(cur_pos);
     }
 
+    // TODO: bug
     // out of screen(die)
-    // TODO: inform the server
+    if (y() >= 500) {
+        Packet p;
+        p.type = Packet::game_player_die;
+        p.pack.game_player_die_info.id = game->id;
+        // emit game->user_msg(p);
+    }
 }
 
 void Unit::event_resolv(bool is_down, QEvent *e) {

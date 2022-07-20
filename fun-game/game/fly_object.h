@@ -8,7 +8,6 @@
 
 class Unit;
 
-// TODO: implement bullet and fly as successor
 class FlyObject : public QObject {
     Q_OBJECT
    public:

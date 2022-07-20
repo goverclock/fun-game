@@ -75,7 +75,8 @@ void Game::serv_msg(Packet p) {
             if (run)
                 for (int i = 0; i < MAX_CLIENTS; i++)
                     if (units[i] != nullptr && units[i]->player_id == quit_id) {
-                        delete units[i];
+                        // delete units[i];
+                        units[i]->hide();
                         units[i] = nullptr;
                         break;
                     }
@@ -98,6 +99,7 @@ void Game::serv_msg(Packet p) {
             }
             break;
         }
+
         case Packet::game_your_turn: {
             view->pb->clear();
             bzero(&cur_opt, sizeof(cur_opt));
@@ -107,16 +109,24 @@ void Game::serv_msg(Packet p) {
             your_turn = true;
             break;
         }
+
         case Packet::game_playeropt: {
             auto &info = p.pack.game_playeropt_info;
             int ind = 0;
             while (units[ind]->player_id != info.id) ind++;
 
-            // TODO... summon a FlyObject
             flyobj_resolv(units[ind], p);
-            //
             break;
         }
+
+        case Packet::game_player_die: {
+            auto &info = p.pack.game_player_die_info;
+            int ind = 0;
+            while (units[ind]->player_id != info.id) ind++;
+            units[ind]->hide();
+            break;
+        }
+
         case Packet::game_end: {
             view->set_game_gui_on_off(false);
             bgobjs->clear();
@@ -141,7 +151,6 @@ void Game::flyobj_resolv(Unit *u, Packet p) {
         return;
     }
 
-    // TODO: gap time between duplicate
     auto pl(p);
     auto pr(p);
     pl.pack.game_playeropt_info.angle += 10;

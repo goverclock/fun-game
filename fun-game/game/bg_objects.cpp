@@ -45,6 +45,7 @@ void BGObjects::init() {
 }
 
 void BGObjects::create_crater(Unit *u, FlyObject *fo) {
+    // crater
     auto p(fo->body->pos());
     p.setX(p.x() + u->x());
     p.setY(p.y() + u->y());
@@ -53,6 +54,17 @@ void BGObjects::create_crater(Unit *u, FlyObject *fo) {
     n->setBrush(Qt::white);
     game->view->sce.addItem(n);
     craters.push_back(n);
+
+    // cause damage
+    n->collidingItems();
+    for (const auto &p : n->collidingItems()) {
+        Unit *dp = dynamic_cast<Unit *>(p);
+        if (dp != nullptr) {
+            dp->change_health(-fo->dmg);
+            break;
+        }
+    }
+
     delete fo;
 }
 

@@ -2,6 +2,6 @@
 
 A fun game which isn't that fun.
 
-Do not waste your life on it.(it's buggy)
+Do not waste your life on it.(it's buggy and unfinished)
 
 
